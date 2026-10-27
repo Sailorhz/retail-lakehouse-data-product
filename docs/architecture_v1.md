@@ -25,23 +25,28 @@ flowchart LR
 
     T[Testing and reconciliation] -. validates .-> SI
     T -. validates .-> G
-
+```
 
 ## Bronze ingestion metadata
 
 Every Bronze record preserves the raw source values and receives operational
-metadata during ingestion.
+metadata during ingestion. Metadata columns are prefixed with `_` so they
+cannot collide with source columns.
 
 | Column | Purpose |
 |---|---|
-| `ingested_at` | Timestamp when the record was ingested into Bronze |
-| `source_file` | Source file name or path |
-| `source_system` | Logical source system |
-| `batch_id` | Identifier for the logical ingestion batch |
-| `pipeline_run_id` | Identifier for the specific Fabric Pipeline execution |
+| `_source_file` | Source file name |
+| `_source_path` | Lakehouse landing path the file was read from |
+| `_source_system` | Logical source system |
+| `_batch_id` | Identifier for the logical ingestion batch |
+| `_ingestion_date` | Landing partition date (`ingestion_date=`) the batch was read from |
+| `_ingested_at_utc` | Timestamp when the record was ingested into Bronze |
+| `_pipeline_run_id` | Identifier for the Fabric Pipeline execution (added once orchestration exists) |
 
-Bronze preserves source values as received. Ingestion metadata may be appended,
-but business cleansing and transformation are deferred to Silver.
+Bronze preserves source values as received. Columns are renamed to snake_case,
+and fields that Silver must parse or standardise (dates, amounts, quantities,
+codes) carry a `_raw` suffix. All values are read as strings; business
+cleansing and transformation are deferred to Silver.
 
 ## Planned source domains
 

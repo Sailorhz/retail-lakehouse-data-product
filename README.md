@@ -3,7 +3,7 @@ Retail Lakehouse Data Product
 
 An end-to-end Microsoft Fabric data product that turns multi-channel retail sales, returns and reference data into trusted commercial metrics for Power BI.
 
-> **Status:** scope and initial business rules agreed; source profiling and implementation have not started.
+> **Status:** sources profiled, architecture v1 agreed, and all five source extracts loaded and validated in the Bronze Lakehouse. Next: synthetic returns generator and Silver transformations.
 
 ## Business problem
 
@@ -157,7 +157,7 @@ Gold Warehouse — dimensional facts and dimensions
 Power BI semantic model and report
 ```
 
-See [`docs/architecture.md`](docs/architecture.md) for the planned logical design and layer responsibilities.
+See [`docs/architecture_v1.md`](docs/architecture_v1.md) for the planned logical design and layer responsibilities.
 
 ## Data-quality and reconciliation requirements
 
@@ -214,10 +214,13 @@ retail-lakehouse-data-product/
 - [x] Select the base dataset and returns-source strategy.
 - [x] Define the initial sales and returns grains.
 - [x] Define initial metric and partial-return rules.
-- [ ] Profile the source files and complete formal data contracts.
-- [ ] Finalise and commit the detailed architecture.
-- [ ] Create the Fabric workspace and Lakehouse.
-- [ ] Load the first raw orders data into Bronze.
+- [x] Profile the source files.
+- [x] Finalise and commit the detailed architecture.
+- [x] Create the Fabric workspace and Lakehouse.
+- [x] Load the first raw orders data into Bronze.
+- [x] Load customers, products, stores and exchange rates into Bronze.
+- [ ] Complete formal data contracts.
+- [ ] Generate the synthetic returns source.
 - [ ] Build and test Silver transformations.
 - [ ] Build the Gold dimensional model and governed metrics.
 - [ ] Add orchestration, monitoring, CI checks and performance evidence.
