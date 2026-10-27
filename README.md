@@ -67,18 +67,18 @@ The original sales event is immutable. A later return must not delete or overwri
 
 ### Returns
 
-`fct_returns` has **one row per return event for one original order line**. A return record must reference the original `order_id` and `order_line_id`.
+`fct_returns` has **one row per return event for one original order line**. A return record must reference the original `order_number` and `line_item`.
 
 An order line can have multiple return events, but cumulative returned quantity must never exceed sold quantity. Partial returns affect only the returned quantity; they do not cancel unaffected lines or units.
 
 The returns source must capture at least:
 
 - `return_id`;
-- `order_id` and `order_line_id`;
+- `order_number` and `line_item`;
 - `return_date` and, where applicable, `refund_date`;
 - `returned_quantity`;
 - `return_reason` and `item_condition`;
-- `return_channel` and `return_store_id`;
+- `return_channel` and `return_store_key`;
 - `refund_amount` and `refund_status`; and
 - ingestion and source-generator metadata.
 
