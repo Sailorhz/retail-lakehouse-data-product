@@ -1,0 +1,15 @@
+.venv/
+Global+Electronics+Retailer/Stores.csv
+Global+Electronics+Retailer/Sales.csv
+Global+Electronics+Retailer/Products.csv
+Global+Electronics+Retailer/Exchange_Rates.csv
+Global+Electronics+Retailer/Customers.csv
+
+# Fabric Data Engineering VS Code extension
+.stubs/
+.vfsmeta/
+.work-folder-info
+
+# OS / editor
+.DS_Store
+.vscode/
