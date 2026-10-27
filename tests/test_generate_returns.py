@@ -97,6 +97,17 @@ def test_different_seed_gives_different_returns(sources, result):
     assert other.batch_1.to_csv(index=False) != result.batch_1.to_csv(index=False)
 
 
+def test_unit_price_rounds_half_up_like_spark():
+    sales = pd.DataFrame([{
+        "Order Number": 1, "Line Item": 1, "Order Date": "1/1/2020", "Delivery Date": np.nan,
+        "CustomerKey": 1, "StoreKey": 1, "ProductKey": 1, "Quantity": 1, "Currency Code": "EUR",
+    }])
+    products = pd.DataFrame({"ProductKey": [1], "Unit Price USD": ["$1.25 "]})
+    rates = pd.DataFrame({"Date": ["1/1/2020"], "Currency": ["EUR"], "Exchange": [0.9]})
+    # 1.25 * 0.9 = 1.125: half-up gives 1.13, Python's round() gives 1.12.
+    assert gr.prepare_order_lines(sales, products, rates)["unit_price"].item() == 1.13
+
+
 def test_output_columns_and_metadata(result):
     for batch, batch_id in ((result.batch_1, "returns_batch_001"), (result.batch_2, "returns_batch_002")):
         assert list(batch.columns) == gr.OUTPUT_COLUMNS

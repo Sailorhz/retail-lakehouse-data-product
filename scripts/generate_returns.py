@@ -19,13 +19,14 @@ from __future__ import annotations
 import argparse
 from dataclasses import dataclass
 from datetime import date, timedelta
+from decimal import ROUND_HALF_UP, Decimal
 from pathlib import Path
 
 import numpy as np
 import pandas as pd
 
 
-GENERATOR_VERSION = "1.0.0"
+GENERATOR_VERSION = "1.1.0"
 DEFAULT_SEED = 20261027
 
 SOURCE_DIRECTORY = Path("Global+Electronics+Retailer")
@@ -173,7 +174,10 @@ def prepare_order_lines(
         "store_key": lines["StoreKey"].astype(int),
         "quantity": lines["Quantity"].astype(int),
         "currency_code": lines["Currency Code"],
-        "unit_price": (lines["unit_price_usd"] * lines["Exchange"]).round(2),
+        "unit_price": [
+            _round_money(Decimal(str(price)) * Decimal(str(rate)))
+            for price, rate in zip(lines["unit_price_usd"], lines["Exchange"])
+        ],
     })
     return lines.sort_values(["order_number", "line_item"]).reset_index(drop=True)
 
@@ -184,8 +188,14 @@ def _choose(rng: np.random.Generator, weights: dict):
     return options[rng.choice(len(options), p=probabilities / probabilities.sum())]
 
 
+def _round_money(amount: Decimal) -> float:
+    # Half-up on exact decimals, matching Spark's ROUND on decimal columns.
+    return float(amount.quantize(Decimal("0.01"), rounding=ROUND_HALF_UP))
+
+
 def _refund_amount(quantity: int, unit_price: float, condition: str) -> float:
-    return round(quantity * unit_price * CONDITION_REFUND_SHARE[condition], 2)
+    share = Decimal(str(CONDITION_REFUND_SHARE[condition]))
+    return _round_money(quantity * Decimal(str(unit_price)) * share)
 
 
 def _event(line, rng: np.random.Generator, returned_quantity: int, return_date: date) -> dict:

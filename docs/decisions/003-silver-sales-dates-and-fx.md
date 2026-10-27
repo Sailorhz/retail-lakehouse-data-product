@@ -1,6 +1,6 @@
 # ADR 003 — Silver rules for delivery dates and currency conversion
 
-**Status:** Proposed
+**Status:** Accepted
 **Date:** 2026-10-27
 
 ## Context

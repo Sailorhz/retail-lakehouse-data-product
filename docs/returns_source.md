@@ -3,7 +3,7 @@
 The Maven dataset has no returns, so [`scripts/generate_returns.py`](../scripts/generate_returns.py)
 generates them from `Sales.csv`. The output is **synthetic** and fully
 reproducible: the same inputs, seed (`20261027`) and generator version
-(`1.0.0`) always produce identical files.
+(`1.1.0`) always produce identical files.
 
 ```bash
 python scripts/generate_returns.py      # writes data/generated/returns/
