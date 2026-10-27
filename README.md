@@ -3,7 +3,7 @@ Retail Lakehouse Data Product
 
 An end-to-end Microsoft Fabric data product that turns multi-channel retail sales, returns and reference data into trusted commercial metrics for Power BI.
 
-> **Status:** sources profiled, architecture v1 agreed, and all five source extracts loaded and validated in the Bronze Lakehouse. Next: synthetic returns generator and Silver transformations.
+> **Status:** Bronze and Silver are built and validated, including a reproducible synthetic returns source whose injected anomalies are all quarantined in Silver. Next: Gold dimensional model in dbt.
 
 ## Business problem
 
@@ -67,18 +67,18 @@ The original sales event is immutable. A later return must not delete or overwri
 
 ### Returns
 
-`fct_returns` has **one row per return event for one original order line**. A return record must reference the original `order_id` and `order_line_id`.
+`fct_returns` has **one row per return event for one original order line**. A return record must reference the original `order_number` and `line_item`.
 
 An order line can have multiple return events, but cumulative returned quantity must never exceed sold quantity. Partial returns affect only the returned quantity; they do not cancel unaffected lines or units.
 
 The returns source must capture at least:
 
 - `return_id`;
-- `order_id` and `order_line_id`;
+- `order_number` and `line_item`;
 - `return_date` and, where applicable, `refund_date`;
 - `returned_quantity`;
 - `return_reason` and `item_condition`;
-- `return_channel` and `return_store_id`;
+- `return_channel` and `return_store_key`;
 - `refund_amount` and `refund_status`; and
 - ingestion and source-generator metadata.
 
@@ -220,8 +220,8 @@ retail-lakehouse-data-product/
 - [x] Load the first raw orders data into Bronze.
 - [x] Load customers, products, stores and exchange rates into Bronze.
 - [ ] Complete formal data contracts.
-- [ ] Generate the synthetic returns source.
-- [ ] Build and test Silver transformations.
+- [x] Generate the synthetic returns source.
+- [x] Build and test Silver transformations.
 - [ ] Build the Gold dimensional model and governed metrics.
 - [ ] Add orchestration, monitoring, CI checks and performance evidence.
 - [ ] Publish the semantic model, report and project demonstration.

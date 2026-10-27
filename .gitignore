@@ -13,3 +13,6 @@ Global+Electronics+Retailer/Customers.csv
 # OS / editor
 .DS_Store
 .vscode/
+
+# Generated returns (reproducible: python scripts/generate_returns.py)
+data/generated/
