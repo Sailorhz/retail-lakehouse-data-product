@@ -1,0 +1,20 @@
+select
+    order_number,
+    line_item,
+    order_date,
+    delivery_date,
+    customer_key,
+    store_key,
+    is_online_order,
+    product_key,
+    quantity,
+    currency_code,
+    unit_price_usd,
+    unit_price_local,
+    sales_amount_local,
+    sales_amount_eur,
+    order_rate_per_usd,
+    order_fx_rate_date,
+    eur_rate_per_usd,
+    eur_fx_rate_date
+from {{ source('silver', 'sales_lines') }}
