@@ -17,6 +17,16 @@ az login                                  # the account that owns the Fabric wor
 pip install -r requirements.txt           # from the repository root
 ```
 
+`msodbcsql18` 18.7 supports OpenSSL 1.0, 1.1 and 3.0 only, but loads it from
+`/opt/homebrew/opt/openssl`, which Homebrew now points at OpenSSL 4. If
+`dbt debug` fails with *Client unable to establish connection*, point the link
+at OpenSSL 3 (re-run after `brew upgrade` resets it):
+
+```bash
+brew install openssl@3
+ln -sfn "../Cellar/openssl@3/$(ls /opt/homebrew/Cellar/openssl@3 | tail -1)" /opt/homebrew/opt/openssl
+```
+
 ## Run
 
 ```bash

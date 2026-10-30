@@ -31,7 +31,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["Online", "Physical store"]
+              arguments:
+                values: ["Online", "Physical store"]
 
   - name: fct_sales
     description: One row per completed sales order line, in order currency and EUR.
@@ -43,32 +44,37 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('dim_date')
-              field: date_key
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: delivery_date_key
         description: Null for in-store sales (ADR 003).
         tests:
           - relationships:
-              to: ref('dim_date')
-              field: date_key
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: customer_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim_customer')
-              field: customer_key
+              arguments:
+                to: ref('dim_customer')
+                field: customer_key
       - name: product_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim_product')
-              field: product_key
+              arguments:
+                to: ref('dim_product')
+                field: product_key
       - name: store_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim_store_channel')
-              field: store_key
+              arguments:
+                to: ref('dim_store_channel')
+                field: store_key
       - name: quantity
         tests: [not_null]
       - name: gross_sales_eur
@@ -83,42 +89,50 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('fct_sales')
-              field: sales_line_key
+              arguments:
+                to: ref('fct_sales')
+                field: sales_line_key
       - name: return_date_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim_date')
-              field: date_key
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: refund_date_key
         tests:
           - relationships:
-              to: ref('dim_date')
-              field: date_key
+              arguments:
+                to: ref('dim_date')
+                field: date_key
       - name: return_store_key
         tests:
           - not_null
           - relationships:
-              to: ref('dim_store_channel')
-              field: store_key
+              arguments:
+                to: ref('dim_store_channel')
+                field: store_key
       - name: refund_status
         tests:
           - not_null
           - accepted_values:
-              values: ["requested", "approved", "completed", "rejected", "cancelled"]
+              arguments:
+                values: ["requested", "approved", "completed", "rejected", "cancelled"]
       - name: return_reason
         tests:
           - not_null
           - accepted_values:
-              values: ["defective", "changed_mind", "not_as_described", "wrong_item", "damaged_in_transit", "late_delivery"]
+              arguments:
+                values: ["defective", "changed_mind", "not_as_described", "wrong_item", "damaged_in_transit", "late_delivery"]
       - name: item_condition
         tests:
           - not_null
           - accepted_values:
-              values: ["new_unopened", "opened", "damaged", "defective"]
+              arguments:
+                values: ["new_unopened", "opened", "damaged", "defective"]
       - name: return_channel
         tests:
           - not_null
           - accepted_values:
-              values: ["store", "online"]
+              arguments:
+                values: ["store", "online"]
