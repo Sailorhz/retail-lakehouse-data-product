@@ -1,0 +1,13 @@
+version: 2
+
+sources:
+  - name: silver
+    description: Validated Silver Delta tables, read through the Lakehouse SQL analytics endpoint.
+    database: "{{ env_var('FABRIC_LAKEHOUSE', 'lh_retail_dev') }}"
+    schema: silver
+    tables:
+      - name: customers
+      - name: products
+      - name: stores
+      - name: sales_lines
+      - name: returns

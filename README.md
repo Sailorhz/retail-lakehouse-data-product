@@ -3,7 +3,7 @@ Retail Lakehouse Data Product
 
 An end-to-end Microsoft Fabric data product that turns multi-channel retail sales, returns and reference data into trusted commercial metrics for Power BI.
 
-> **Status:** Bronze and Silver are built and validated, including a reproducible synthetic returns source whose injected anomalies are all quarantined in Silver. Next: Gold dimensional model in dbt.
+> **Status:** Bronze, Silver and the Gold star schema are built and validated: dbt builds six Gold tables in the Fabric Warehouse and all 62 models and tests pass. Next: Power BI semantic model and report.
 
 ## Business problem
 

@@ -1,0 +1,15 @@
+# No secrets: authentication uses the signed-in Azure CLI account (`az login`).
+# Set FABRIC_SQL_ENDPOINT to the Warehouse SQL connection string, e.g.
+#   export FABRIC_SQL_ENDPOINT=xxxx.datawarehouse.fabric.microsoft.com
+retail_lakehouse:
+  target: dev
+  outputs:
+    dev:
+      type: fabric
+      driver: "ODBC Driver 18 for SQL Server"
+      server: "{{ env_var('FABRIC_SQL_ENDPOINT') }}"
+      port: 1433
+      database: "{{ env_var('FABRIC_WAREHOUSE', 'wh_retail_gold') }}"
+      schema: gold
+      authentication: CLI
+      threads: 4

@@ -5,3 +5,5 @@ pytz==2026.3.post1
 six==1.17.0
 tzdata==2026.3
 pytest==8.4.2
+dbt-fabric==1.10.0
+dbt-core==1.10.23

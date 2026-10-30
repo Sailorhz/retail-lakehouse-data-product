@@ -16,3 +16,9 @@ Global+Electronics+Retailer/Customers.csv
 
 # Generated returns (reproducible: python scripts/generate_returns.py)
 data/generated/
+
+# dbt
+dbt/target/
+dbt/logs/
+dbt/dbt_packages/
+dbt/.user.yml
