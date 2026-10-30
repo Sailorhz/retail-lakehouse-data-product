@@ -1,0 +1,195 @@
+table fct_sales
+
+	measure 'Gross Sales' = SUM(fct_sales[gross_sales_eur])
+		formatString: #,0.00
+		displayFolder: Sales
+
+	measure Discounts = SUM(fct_sales[discount_eur])
+		formatString: #,0.00
+		displayFolder: Sales
+
+	measure Returns = SUM(fct_returns[financial_refund_eur])
+		formatString: #,0.00
+		displayFolder: Sales
+
+	measure 'Net Sales' = [Gross Sales] - [Discounts] - [Returns]
+		formatString: #,0.00
+		displayFolder: Sales
+
+	measure Cost = SUM(fct_sales[cost_eur])
+		formatString: #,0.00
+		displayFolder: Sales
+
+	measure 'Gross Margin %' = DIVIDE([Gross Sales] - [Discounts] - [Cost], [Gross Sales] - [Discounts])
+		formatString: 0.0%
+		displayFolder: Sales
+
+	measure Orders = DISTINCTCOUNT(fct_sales[order_number])
+		formatString: #,0
+		displayFolder: Orders
+
+	measure 'Average Order Value' = DIVIDE([Net Sales], [Orders])
+		formatString: #,0.00
+		displayFolder: Orders
+
+	measure 'Units Sold' = SUM(fct_sales[quantity])
+		formatString: #,0
+		displayFolder: Returns
+
+	measure 'Units Returned' = CALCULATE(SUM(fct_returns[returned_quantity]), fct_returns[is_financial_refund] = TRUE())
+		formatString: #,0
+		displayFolder: Returns
+
+	measure 'Return Rate' = DIVIDE([Units Returned], [Units Sold])
+		formatString: 0.0%
+		displayFolder: Returns
+
+	measure 'Returns by Sale Date' = CALCULATE([Returns], USERELATIONSHIP(fct_returns[order_date_key], dim_date[date_key]))
+		formatString: #,0.00
+		displayFolder: Returns
+
+	measure 'Returns at Receiving Store' = CALCULATE([Returns], USERELATIONSHIP(fct_returns[return_store_key], dim_store_channel[store_key]))
+		formatString: #,0.00
+		displayFolder: Returns
+
+	measure Customers = DISTINCTCOUNT(fct_sales[customer_key])
+		formatString: #,0
+		displayFolder: Customers
+
+	measure 'Repeat Customer Rate' = ```
+			VAR repeat_customers =
+			    COUNTROWS(
+			        FILTER(
+			            VALUES(fct_sales[customer_key]),
+			            CALCULATE(DISTINCTCOUNT(fct_sales[order_number])) >= 2
+			        )
+			    )
+			RETURN DIVIDE(repeat_customers, [Customers])
+			```
+		formatString: 0.0%
+		displayFolder: Customers
+
+	measure 'YTD Sales' = ```
+			VAR last_sale_date = CALCULATE(MAX(dim_date[calendar_date]), fct_sales)
+			VAR ytd_dates = FILTER(DATESYTD(dim_date[calendar_date]), dim_date[calendar_date] <= last_sale_date)
+			RETURN CALCULATE([Net Sales], ytd_dates)
+			```
+		formatString: #,0.00
+		displayFolder: Time intelligence
+
+	measure 'PY YTD Sales' = ```
+			VAR last_sale_date = CALCULATE(MAX(dim_date[calendar_date]), fct_sales)
+			VAR ytd_dates = FILTER(DATESYTD(dim_date[calendar_date]), dim_date[calendar_date] <= last_sale_date)
+			RETURN CALCULATE([Net Sales], SAMEPERIODLASTYEAR(ytd_dates))
+			```
+		formatString: #,0.00
+		displayFolder: Time intelligence
+
+	measure 'YoY %' = DIVIDE([YTD Sales] - [PY YTD Sales], [PY YTD Sales])
+		formatString: 0.0%
+		displayFolder: Time intelligence
+
+	column sales_line_key
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: sales_line_key
+
+	column order_number
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: order_number
+
+	column line_item
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: line_item
+
+	column order_date_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: order_date_key
+
+	column delivery_date_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: delivery_date_key
+
+	column customer_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: customer_key
+
+	column store_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: store_key
+
+	column product_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: product_key
+
+	column is_online_order
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_online_order
+
+	column currency_code
+		dataType: string
+		summarizeBy: none
+		sourceColumn: currency_code
+
+	column quantity
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: quantity
+
+	column unit_price_local
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: none
+		sourceColumn: unit_price_local
+
+	column gross_sales_local
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: gross_sales_local
+
+	column gross_sales_eur
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: gross_sales_eur
+
+	column discount_eur
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: discount_eur
+
+	column cost_eur
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: cost_eur
+
+	column fx_rate_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: fx_rate_date
+
+	partition fct_sales = entity
+		mode: directLake
+		source
+			entityName: fct_sales
+			schemaName: gold
+			expressionSource: DatabaseQuery

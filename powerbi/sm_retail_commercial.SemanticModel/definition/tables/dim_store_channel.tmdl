@@ -1,0 +1,49 @@
+table dim_store_channel
+
+	column store_key
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: store_key
+
+	column store_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: store_name
+
+	column channel
+		dataType: string
+		summarizeBy: none
+		sourceColumn: channel
+
+	column country
+		dataType: string
+		summarizeBy: none
+		sourceColumn: country
+
+	column state
+		dataType: string
+		summarizeBy: none
+		sourceColumn: state
+
+	column square_meters
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: square_meters
+
+	column open_date
+		dataType: dateTime
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: open_date
+
+	column is_online
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_online
+
+	partition dim_store_channel = entity
+		mode: directLake
+		source
+			entityName: dim_store_channel
+			schemaName: gold
+			expressionSource: DatabaseQuery

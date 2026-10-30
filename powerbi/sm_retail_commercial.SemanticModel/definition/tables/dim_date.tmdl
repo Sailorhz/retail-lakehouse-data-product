@@ -1,0 +1,90 @@
+table dim_date
+	dataCategory: Time
+
+	column date_key
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: date_key
+
+	column calendar_date
+		dataType: dateTime
+		isKey
+		formatString: yyyy-mm-dd
+		summarizeBy: none
+		sourceColumn: calendar_date
+
+	column calendar_year
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: calendar_year
+
+	column calendar_quarter
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: calendar_quarter
+
+	column quarter_label
+		dataType: string
+		summarizeBy: none
+		sourceColumn: quarter_label
+		sortByColumn: calendar_quarter
+
+	column calendar_month
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: calendar_month
+
+	column month_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: month_name
+		sortByColumn: calendar_month
+
+	column month_short_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: month_short_name
+		sortByColumn: calendar_month
+
+	column year_month
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: year_month
+
+	column day_of_month
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: day_of_month
+
+	column day_of_year
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: day_of_year
+
+	column iso_week
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: iso_week
+
+	column day_of_week
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: day_of_week
+
+	column day_name
+		dataType: string
+		summarizeBy: none
+		sourceColumn: day_name
+		sortByColumn: day_of_week
+
+	column is_weekend
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_weekend
+
+	partition dim_date = entity
+		mode: directLake
+		source
+			entityName: dim_date
+			schemaName: gold
+			expressionSource: DatabaseQuery
