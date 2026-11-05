@@ -81,3 +81,5 @@ from scratch**.
 | Bottom left | Clustered bar | Y: `fct_returns[return_reason]`; X: Returns |
 | Bottom right | Table | `dim_store_channel[channel]`, `country`; Net Sales, Return Rate, Average Order Value |
 | Slicers | Slicer | `dim_date[calendar_year]`, `dim_store_channel[channel]`, `dim_customer[country]` |
+
+![Commercial overview report, all years, no slicers applied](../docs/evidence/day-07-commercial-overview.png)
