@@ -1,0 +1,130 @@
+table fct_returns
+
+	column return_id
+		dataType: string
+		summarizeBy: none
+		sourceColumn: return_id
+
+	column sales_line_key
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: sales_line_key
+
+	column order_number
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: order_number
+
+	column line_item
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: line_item
+
+	column return_date_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: return_date_key
+
+	column refund_date_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: refund_date_key
+
+	column order_date_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: order_date_key
+
+	column customer_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: customer_key
+
+	column product_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: product_key
+
+	column sale_store_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: sale_store_key
+
+	column return_store_key
+		dataType: int64
+		isHidden
+		summarizeBy: none
+		sourceColumn: return_store_key
+
+	column return_channel
+		dataType: string
+		summarizeBy: none
+		sourceColumn: return_channel
+
+	column return_reason
+		dataType: string
+		summarizeBy: none
+		sourceColumn: return_reason
+
+	column item_condition
+		dataType: string
+		summarizeBy: none
+		sourceColumn: item_condition
+
+	column refund_status
+		dataType: string
+		summarizeBy: none
+		sourceColumn: refund_status
+
+	column is_financial_refund
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: is_financial_refund
+
+	column returned_quantity
+		dataType: int64
+		summarizeBy: sum
+		sourceColumn: returned_quantity
+
+	column refund_currency_code
+		dataType: string
+		summarizeBy: none
+		sourceColumn: refund_currency_code
+
+	column refund_amount_local
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: refund_amount_local
+
+	column refund_amount_eur
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: refund_amount_eur
+
+	column financial_refund_eur
+		dataType: decimal
+		formatString: #,0.00
+		summarizeBy: sum
+		sourceColumn: financial_refund_eur
+
+	column days_to_return
+		dataType: int64
+		summarizeBy: none
+		sourceColumn: days_to_return
+
+	partition fct_returns = entity
+		mode: directLake
+		source
+			entityName: fct_returns
+			schemaName: gold
+			expressionSource: DatabaseQuery

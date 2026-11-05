@@ -1,0 +1,41 @@
+relationship sales_order_date
+	fromColumn: fct_sales.order_date_key
+	toColumn: dim_date.date_key
+
+relationship sales_customer
+	fromColumn: fct_sales.customer_key
+	toColumn: dim_customer.customer_key
+
+relationship sales_product
+	fromColumn: fct_sales.product_key
+	toColumn: dim_product.product_key
+
+relationship sales_store
+	fromColumn: fct_sales.store_key
+	toColumn: dim_store_channel.store_key
+
+relationship returns_return_date
+	fromColumn: fct_returns.return_date_key
+	toColumn: dim_date.date_key
+
+relationship returns_sale_date
+	fromColumn: fct_returns.order_date_key
+	toColumn: dim_date.date_key
+	isActive: false
+
+relationship returns_customer
+	fromColumn: fct_returns.customer_key
+	toColumn: dim_customer.customer_key
+
+relationship returns_product
+	fromColumn: fct_returns.product_key
+	toColumn: dim_product.product_key
+
+relationship returns_sale_store
+	fromColumn: fct_returns.sale_store_key
+	toColumn: dim_store_channel.store_key
+
+relationship returns_receiving_store
+	fromColumn: fct_returns.return_store_key
+	toColumn: dim_store_channel.store_key
+	isActive: false
