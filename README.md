@@ -226,9 +226,11 @@ retail-lakehouse-data-product/
 - [ ] Complete formal data contracts.
 - [x] Generate the synthetic returns source.
 - [x] Build and test Silver transformations.
-- [ ] Build the Gold dimensional model and governed metrics.
-- [ ] Add orchestration, monitoring, CI checks and performance evidence.
-- [ ] Publish the semantic model, report and project demonstration.
+- [x] Build the Gold dimensional model and governed metrics.
+- [x] Add a CI check that runs dbt build on Fabric.
+- [ ] Add orchestration, monitoring and performance evidence.
+- [x] Publish the semantic model and commercial overview report.
+- [ ] Publish the project demonstration.
 
 ## Attribution and transparency
 
