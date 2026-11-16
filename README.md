@@ -5,7 +5,7 @@ An end-to-end Microsoft Fabric data product that turns multi-channel retail sale
 
 > **Status:** Bronze, Silver and the Gold star schema are built and validated: dbt builds six Gold tables in the Fabric Warehouse and all 62 models and tests pass. The Direct Lake semantic model and a one-page commercial overview report are built on top of Gold.
 
-![Commercial overview report, all years, no slicers applied](docs/evidence/day-07-commercial-overview.png)
+![Commercial overview report, 2020, physical stores in France](docs/evidence/day-07-commercial-overview.png)
 
 See [`powerbi/`](powerbi/README.md) for the semantic model, measures and report layout.
 
