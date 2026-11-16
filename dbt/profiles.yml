@@ -1,4 +1,7 @@
-# No secrets: authentication uses the signed-in Azure CLI account (`az login`).
+# No secrets in this file: values come from environment variables.
+# dev: authentication uses the signed-in Azure CLI account (`az login`).
+# ci:  used by GitHub Actions; a service principal whose credentials are stored
+#      as repository secrets (see dbt/README.md#continuous-integration).
 # Set FABRIC_SQL_ENDPOINT to the Warehouse SQL connection string, e.g.
 #   export FABRIC_SQL_ENDPOINT=xxxx.datawarehouse.fabric.microsoft.com
 retail_lakehouse:
@@ -12,4 +15,16 @@ retail_lakehouse:
       database: "{{ env_var('FABRIC_WAREHOUSE', 'wh_retail_gold') }}"
       schema: gold
       authentication: CLI
+      threads: 4
+    ci:
+      type: fabric
+      driver: "ODBC Driver 18 for SQL Server"
+      server: "{{ env_var('FABRIC_SQL_ENDPOINT') }}"
+      port: 1433
+      database: "{{ env_var('FABRIC_WAREHOUSE', 'wh_retail_gold') }}"
+      schema: gold
+      authentication: ServicePrincipal
+      tenant_id: "{{ env_var('AZURE_TENANT_ID') }}"
+      client_id: "{{ env_var('AZURE_CLIENT_ID') }}"
+      client_secret: "{{ env_var('AZURE_CLIENT_SECRET') }}"
       threads: 4
