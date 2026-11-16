@@ -230,12 +230,6 @@ retail-lakehouse-data-product/
 - [ ] Add orchestration, monitoring, CI checks and performance evidence.
 - [ ] Publish the semantic model, report and project demonstration.
 
-## Immediate roadmap
-
-- **Day 1 — 25 August 2026:** create the repository and commit the retail use case, KPIs, success criteria and grain assumptions.
-- **Day 2 — 26 August 2026:** draw the source-to-Power-BI architecture.
-- **Day 3 — 27 August 2026:** create the Fabric workspace and Lakehouse, then load the first raw orders dataset.
-
 ## Attribution and transparency
 
 The selected base dataset is attributed above. Generated returns will be labelled as synthetic and reproducible from a fixed seed and versioned generation rules. No private customer, employer or retailer data will be used.
