@@ -1,0 +1,134 @@
+name: CI
+
+# checks:    every push and pull request; needs no secrets.
+# dbt-build: pushes to main and manual runs, once the Fabric secrets exist.
+#            It rebuilds the real Gold schema, so it never runs on unmerged
+#            pull-request code (generate_schema_name writes to `gold` as-is).
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHON_VERSION: "3.11"
+  DBT_PROFILES_DIR: ${{ github.workspace }}/dbt
+
+jobs:
+  checks:
+    name: Python tests and dbt parse
+    runs-on: ubuntu-latest
+    env:
+      # dbt parse renders the profile but never opens a connection,
+      # so a placeholder endpoint is enough here.
+      FABRIC_SQL_ENDPOINT: ci-placeholder.datawarehouse.fabric.microsoft.com
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install Microsoft ODBC Driver 18
+        run: |
+          if ! odbcinst -q -d -n "ODBC Driver 18 for SQL Server" >/dev/null 2>&1; then
+            curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+              | sudo gpg --dearmor --yes -o /usr/share/keyrings/microsoft-prod.gpg
+            curl -fsSL "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list" \
+              | sudo tee /etc/apt/sources.list.d/mssql-release.list >/dev/null
+            sudo apt-get update
+            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc
+          fi
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: Python unit tests (returns generator)
+        run: pytest -q tests
+
+      - name: dbt parse (project, refs, YAML tests)
+        working-directory: dbt
+        run: dbt parse --target dev
+
+  fabric-secrets:
+    name: Check Fabric secrets
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    outputs:
+      configured: ${{ steps.check.outputs.configured }}
+    steps:
+      - id: check
+        env:
+          FABRIC_SQL_ENDPOINT: ${{ secrets.FABRIC_SQL_ENDPOINT }}
+          AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+          AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+          AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+        run: |
+          if [ -n "$FABRIC_SQL_ENDPOINT" ] && [ -n "$AZURE_TENANT_ID" ] \
+             && [ -n "$AZURE_CLIENT_ID" ] && [ -n "$AZURE_CLIENT_SECRET" ]; then
+            echo "configured=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "configured=false" >> "$GITHUB_OUTPUT"
+            echo "::notice title=dbt build skipped::Fabric secrets are not set. See dbt/README.md, section Continuous integration."
+          fi
+
+  dbt-build:
+    name: dbt build on Fabric
+    needs: [checks, fabric-secrets]
+    if: needs.fabric-secrets.outputs.configured == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      FABRIC_SQL_ENDPOINT: ${{ secrets.FABRIC_SQL_ENDPOINT }}
+      AZURE_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      AZURE_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      AZURE_CLIENT_SECRET: ${{ secrets.AZURE_CLIENT_SECRET }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+          cache: pip
+
+      - name: Install Microsoft ODBC Driver 18
+        run: |
+          if ! odbcinst -q -d -n "ODBC Driver 18 for SQL Server" >/dev/null 2>&1; then
+            curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+              | sudo gpg --dearmor --yes -o /usr/share/keyrings/microsoft-prod.gpg
+            curl -fsSL "https://packages.microsoft.com/config/ubuntu/$(lsb_release -rs)/prod.list" \
+              | sudo tee /etc/apt/sources.list.d/mssql-release.list >/dev/null
+            sudo apt-get update
+            sudo ACCEPT_EULA=Y apt-get install -y msodbcsql18 unixodbc
+          fi
+
+      - name: Install Python dependencies
+        run: pip install -r requirements.txt
+
+      - name: dbt debug (connection check)
+        working-directory: dbt
+        run: dbt debug --target ci
+
+      - name: dbt build (models and tests in dependency order)
+        working-directory: dbt
+        run: dbt build --target ci
+
+      # Public repository: artifacts are visible to anyone, so only the run
+      # results are kept (dbt.log can contain connection details).
+      - name: Upload dbt run results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-run-results
+          path: dbt/target/run_results.json
+          if-no-files-found: ignore
+          retention-days: 14
